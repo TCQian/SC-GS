@@ -1,4 +1,4 @@
-Steps taken to make installation work:
+# Steps taken to make installation work:
 ```
 git clone git@github.com:CVMI-Lab/SC-GS.git
 
@@ -6,7 +6,11 @@ git submodule init; git submodule update
 
 conda create -n scgs python=3.10
 
+conda activate scgs
+
 conda install -c conda-forge glm ninja
+
+// must have cuda runtime when running below installations
 
 pip install torch torchvision torchaudio
 
