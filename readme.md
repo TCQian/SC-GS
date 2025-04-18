@@ -1,3 +1,26 @@
+Steps taken to make installation work:
+```
+git clone git@github.com:CVMI-Lab/SC-GS.git
+
+git submodule init; git submodule update
+
+conda create -n scgs python=3.10
+
+conda install -c conda-forge glm ninja
+
+pip install torch torchvision torchaudio
+
+pip install -r requirements.txt
+
+export CPLUS_INCLUDE_PATH=$CONDA_PREFIX/include
+pip install -e submodules/diff-gaussian-rasterization
+
+vim simple_knn.cu // add `#include <cfloat>` at top of the file
+vim spatial.cu // add `#include <cfloat>` at top of the file
+pip install -e submodules/simple-knn
+```
+
+
 <h1 align="center">
   SC-GS: Sparse-Controlled Gaussian Splatting for Editable Dynamic Scenes
 
