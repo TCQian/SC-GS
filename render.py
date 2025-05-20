@@ -31,6 +31,7 @@ from utils.image_utils import psnr, lpips, alex_lpips
 
 
 def render_set(model_path, load2gpt_on_the_fly, name, iteration, views, gaussians, pipeline, background, deform):
+    video_render_path = os.path.join(model_path, name, "ours_{}".format(iteration))
     render_path = os.path.join(model_path, name, "ours_{}".format(iteration), "renders")
     gts_path = os.path.join(model_path, name, "ours_{}".format(iteration), "gt")
     depth_path = os.path.join(model_path, name, "ours_{}".format(iteration), "depth")
@@ -78,7 +79,7 @@ def render_set(model_path, load2gpt_on_the_fly, name, iteration, views, gaussian
         torchvision.utils.save_image(gt, os.path.join(gts_path, '{0:05d}'.format(idx) + ".png"))
         torchvision.utils.save_image(depth, os.path.join(depth_path, '{0:05d}'.format(idx) + ".png"))
     renderings = np.stack(renderings, 0).transpose(0, 2, 3, 1)
-    imageio.mimwrite(os.path.join(render_path, 'video.mp4'), renderings, fps=30, quality=8)
+    imageio.mimwrite(os.path.join(video_render_path, 'video.mp4'), renderings, fps=30, quality=8)
 
     # Measurement
     psnr_test = torch.stack(psnr_list).mean()
@@ -90,6 +91,7 @@ def render_set(model_path, load2gpt_on_the_fly, name, iteration, views, gaussian
 
 
 def interpolate_time(model_path, load2gpt_on_the_fly, name, iteration, views, gaussians, pipeline, background, deform):
+    video_render_path = os.path.join(model_path, name, "interpolate_time_{}".format(iteration))
     render_path = os.path.join(model_path, name, "interpolate_{}".format(iteration), "renders")
     depth_path = os.path.join(model_path, name, "interpolate_{}".format(iteration), "depth")
 
@@ -121,10 +123,11 @@ def interpolate_time(model_path, load2gpt_on_the_fly, name, iteration, views, ga
         torchvision.utils.save_image(depth, os.path.join(depth_path, '{0:05d}'.format(t) + ".png"))
 
     renderings = np.stack(renderings, 0).transpose(0, 2, 3, 1)
-    imageio.mimwrite(os.path.join(render_path, 'video.mp4'), renderings, fps=30, quality=8)
+    imageio.mimwrite(os.path.join(video_render_path, 'video.mp4'), renderings, fps=30, quality=8)
 
 
 def interpolate_all(model_path, load2gpt_on_the_fly, name, iteration, views, gaussians, pipeline, background, deform):
+    video_render_path = os.path.join(model_path, name, "interpolate_all_{}".format(iteration))
     render_path = os.path.join(model_path, name, "interpolate_all_{}".format(iteration), "renders")
     depth_path = os.path.join(model_path, name, "interpolate_all_{}".format(iteration), "depth")
 
@@ -167,7 +170,7 @@ def interpolate_all(model_path, load2gpt_on_the_fly, name, iteration, views, gau
         torchvision.utils.save_image(depth, os.path.join(depth_path, '{0:05d}'.format(i) + ".png"))
 
     renderings = np.stack(renderings, 0).transpose(0, 2, 3, 1)
-    imageio.mimwrite(os.path.join(render_path, 'video.mp4'), renderings, fps=30, quality=8)
+    imageio.mimwrite(os.path.join(video_render_path, 'video.mp4'), renderings, fps=30, quality=8)
 
 
 def render_sets(dataset: ModelParams, iteration: int, pipeline: PipelineParams, skip_train: bool, skip_test: bool, mode: str, load2device_on_the_fly=False):
