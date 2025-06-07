@@ -905,7 +905,7 @@ def readCMUInfo(path, split):
     return camera_infos
 
 
-def readCMUSceneInfo(path, apply_cam_norm=True, recenter_by_pcl=False):
+def readCMUSceneInfo(path, apply_cam_norm=False, recenter_by_pcl=False):
     print('Reading Training Camera')
     train_cam_infos = readCMUInfo(path, 'train')
     print('Reading Test Camera')

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=SC-GS-cmu-blender-normalized                 # Job name
+#SBATCH --job-name=SC-GS-cmu-blender-4dg                 # Job name
 #SBATCH --time=6:00:00                   # Time limit hrs:min:sec
 #SBATCH --gres=gpu:h100-47:1             # must use this GPU, since pytorch3d relied on it
 #SBATCH --mail-type=ALL                  # Get email for all status updates
@@ -10,4 +10,8 @@
 source ~/.bashrc
 conda activate scgs
 
-CUDA_VISIBLE_DEVICES=0 python train_gui.py --source_path ./data/cmu/bastketball --model_path outputs/bastketball_blender_normalized --deform_type node --node_num 512 --hyper_dim 8 --is_blender --eval --gt_alpha_mask_as_scene_mask --local_frame --resolution 2 --W 800 --H 800
+CUDA_VISIBLE_DEVICES=0 python train_gui.py --source_path ./data/cmu/basketball --model_path outputs/basketball_blender_4dg --deform_type node --node_num 512 --hyper_dim 8 --is_blender --eval --gt_alpha_mask_as_scene_mask --local_frame --resolution 2 --W 800 --H 800
+CUDA_VISIBLE_DEVICES=0 python render.py --source_path ./data/cmu/basketball --model_path outputs/basketball_blender_4dg --deform_type node --node_num 512 --hyper_dim 8  --is_blender --eval --gt_alpha_mask_as_scene_mask --local_frame --resolution 2 --W 800 --H 800
+
+# CUDA_VISIBLE_DEVICES=0 python train_gui.py --source_path ./data/cmu/basketball --model_path outputs/basketball_4dg --deform_type node --node_num 512 --hyper_dim 8 --eval --gt_alpha_mask_as_scene_mask --local_frame --resolution 2 --W 800 --H 800
+# CUDA_VISIBLE_DEVICES=0 python render.py --source_path ./data/cmu/basketball --model_path outputs/basketball_4dg --deform_type node --node_num 512 --hyper_dim 8 --eval --gt_alpha_mask_as_scene_mask --local_frame --resolution 2 --W 800 --H 800
