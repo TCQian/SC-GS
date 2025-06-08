@@ -12,6 +12,7 @@
 import torch
 from scene import Scene, DeformModel
 import os
+from time import time
 from tqdm import tqdm
 from os import makedirs
 from gaussian_renderer import render
@@ -35,6 +36,7 @@ def render_set(model_path, load2gpt_on_the_fly, name, iteration, views, gaussian
     render_path = os.path.join(model_path, name, "ours_{}".format(iteration), "renders")
     gts_path = os.path.join(model_path, name, "ours_{}".format(iteration), "gt")
     depth_path = os.path.join(model_path, name, "ours_{}".format(iteration), "depth")
+    fps_path = os.path.join(model_path, name, "ours_{}".format(iteration), "fps.txt")
 
     makedirs(render_path, exist_ok=True)
     makedirs(gts_path, exist_ok=True)
@@ -46,7 +48,9 @@ def render_set(model_path, load2gpt_on_the_fly, name, iteration, views, gaussian
 
     to8b = lambda x: (255 * np.clip(x, 0, 1)).astype(np.uint8)
     renderings = []
+    timings = []
     for idx, view in enumerate(tqdm(views, desc="Rendering progress")):
+        ts = time()
         if load2gpt_on_the_fly:
             view.load2device()
         fid = view.fid
@@ -75,11 +79,16 @@ def render_set(model_path, load2gpt_on_the_fly, name, iteration, views, gaussian
         depth = depth / (depth.max() + 1e-5)
 
         gt = view.original_image[0:4, :, :]
+        timings.append(time() - ts)
         torchvision.utils.save_image(rendering, os.path.join(render_path, '{0:05d}'.format(idx) + ".png"))
         torchvision.utils.save_image(gt, os.path.join(gts_path, '{0:05d}'.format(idx) + ".png"))
         torchvision.utils.save_image(depth, os.path.join(depth_path, '{0:05d}'.format(idx) + ".png"))
     renderings = np.stack(renderings, 0).transpose(0, 2, 3, 1)
     imageio.mimwrite(os.path.join(video_render_path, 'video.mp4'), renderings, fps=30, quality=8)
+
+    with open(fps_path, 'w') as f:
+        total_time = sum(timings)
+        f.write("0") if total_time < 1e-5 else f.write(str(len(views) / total_time))
 
     # Measurement
     psnr_test = torch.stack(psnr_list).mean()
