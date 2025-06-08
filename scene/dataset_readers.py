@@ -514,7 +514,7 @@ def view_synthesis(cps, factor=10):
     return new_cps
 
 
-def readNerfiesCameras(path, inter_valid=True):
+def readNerfiesCameras(path, inter_valid=False):
     with open(f'{path}/scene.json', 'r') as f:
         scene_json = json.load(f)
     with open(f'{path}/metadata.json', 'r') as f:
