@@ -119,6 +119,9 @@ class OptimizationParams(ParamGroup):
         self.oneupSHdegree_step = 1000
         self.random_bg_color = False
 
+        # Adaptive densification controls
+        self.max_gaussians_threshold = 1_000_000  # Stop densification beyond this
+
         self.deform_lr_scale = 1.
         self.deform_downsamp_strategy = 'samp_hyper'
         self.deform_downsamp_with_dynamic_mask = False

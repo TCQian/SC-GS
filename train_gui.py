@@ -1192,9 +1192,23 @@ class GUI:
                     # Nodes densify
                     self.deform.densify(max_grad=self.opt.densify_grad_threshold, x=self.gaussians.get_xyz, x_grad=self.gaussians.xyz_gradient_accum / self.gaussians.denom, feature=self.gaussians.feature, force_dp=(self.iteration == self.opt.node_force_densify_prune_step))
 
-                if self.iteration > self.opt.densify_from_iter and self.iteration % self.opt.densification_interval == 0:
+                current_gaussian_count = self.gaussians.get_xyz.shape[0]
+                if current_gaussian_count <= self.opt.max_gaussians_threshold and self.iteration > self.opt.densify_from_iter and self.iteration % self.opt.densification_interval == 0:
                     size_threshold = 20 if self.iteration > self.opt.opacity_reset_interval else None
-                    self.gaussians.densify_and_prune(self.opt.densify_grad_threshold, 0.005, self.scene.cameras_extent, size_threshold)
+
+                    # Adaptive densification threshold based on current Gaussian count
+                    current_gaussian_count = self.gaussians.get_xyz.shape[0]
+                    if current_gaussian_count > 800_000:  # 800K+ gaussians
+                        adaptive_threshold = self.opt.densify_grad_threshold * 5  # Much stricter
+                        print(f"[ITER {self.iteration}] Using adaptive threshold {adaptive_threshold:.6f} for {current_gaussian_count} Gaussians")
+                    elif current_gaussian_count > 500_000:  # 500K+ gaussians  
+                        adaptive_threshold = self.opt.densify_grad_threshold * 3  # Stricter
+                    else:
+                        adaptive_threshold = self.opt.densify_grad_threshold  # Normal
+                    
+                    self.gaussians.densify_and_prune(adaptive_threshold, 0.005, self.scene.cameras_extent, size_threshold)
+                elif current_gaussian_count > self.opt.max_gaussians_threshold and self.iteration > self.opt.densify_from_iter and self.iteration % self.opt.densification_interval == 0:
+                    print(f"⚠️  [ITER {self.iteration}] STOPPING DENSIFICATION: {current_gaussian_count} Gaussians exceed threshold {self.opt.max_gaussians_threshold}")
 
                 if self.iteration % self.opt.opacity_reset_interval == 0 or (
                         self.dataset.white_background and self.iteration == self.opt.densify_from_iter):
