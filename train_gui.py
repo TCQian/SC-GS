@@ -1198,10 +1198,10 @@ class GUI:
 
                     # Adaptive densification threshold based on current Gaussian count
                     current_gaussian_count = self.gaussians.get_xyz.shape[0]
-                    if current_gaussian_count > 800_000:  # 800K+ gaussians
+                    if current_gaussian_count > 1_200_000:
                         adaptive_threshold = self.opt.densify_grad_threshold * 5  # Much stricter
                         print(f"[ITER {self.iteration}] Using adaptive threshold {adaptive_threshold:.6f} for {current_gaussian_count} Gaussians")
-                    elif current_gaussian_count > 500_000:  # 500K+ gaussians  
+                    elif current_gaussian_count > 800_000:
                         adaptive_threshold = self.opt.densify_grad_threshold * 3  # Stricter
                     else:
                         adaptive_threshold = self.opt.densify_grad_threshold  # Normal
