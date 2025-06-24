@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=SC-GS-hypernerf-maxg1 # Job name
+#SBATCH --job-name=SC-GS-hypernerf-maxg2 # Job name
 #SBATCH --time=20:00:00                  # Time limit hrs:min:sec
 #SBATCH --gres=gpu:h100-47:1             # must use this GPU, since pytorch3d relied on it
 #SBATCH --mail-type=ALL                  # Get email for all status updates
@@ -10,5 +10,5 @@
 source ~/.bashrc
 conda activate scgs
 
-CUDA_VISIBLE_DEVICES=0 python train_gui.py --source_path ./data/hypernerf/interp/aleks-teapot --model_path outputs/aleks-teapot-maxg1 --deform_type node --node_num 512 --hyper_dim 2 --eval --gt_alpha_mask_as_scene_mask --local_frame --resolution 2 --W 800 --H 800
-CUDA_VISIBLE_DEVICES=0 python render.py --source_path ./data/hypernerf/interp/aleks-teapot --model_path outputs/aleks-teapot-maxg1 --deform_type node --node_num 512 --hyper_dim 2 --eval --gt_alpha_mask_as_scene_mask --local_frame --resolution 2 --W 800 --H 800
+CUDA_VISIBLE_DEVICES=0 python train_gui.py --source_path ./data/hypernerf/interp/aleks-teapot --model_path outputs/aleks-teapot-maxg2 --deform_type node --node_num 512 --hyper_dim 2 --eval --gt_alpha_mask_as_scene_mask --local_frame --resolution 2 --W 800 --H 800
+CUDA_VISIBLE_DEVICES=0 python render.py --source_path ./data/hypernerf/interp/aleks-teapot --model_path outputs/aleks-teapot-maxg2 --deform_type node --node_num 512 --hyper_dim 2 --eval --gt_alpha_mask_as_scene_mask --local_frame --resolution 2 --W 800 --H 800

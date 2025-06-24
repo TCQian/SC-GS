@@ -120,7 +120,7 @@ class OptimizationParams(ParamGroup):
         self.random_bg_color = False
 
         # Adaptive densification controls
-        self.max_gaussians_threshold = 1_000_000  # Stop densification beyond this
+        self.max_gaussians_threshold = 1_500_000  # Stop densification beyond this
 
         self.deform_lr_scale = 1.
         self.deform_downsamp_strategy = 'samp_hyper'
