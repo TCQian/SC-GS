@@ -1188,16 +1188,27 @@ class GUI:
             if self.iteration < self.opt.densify_until_iter:
                 self.gaussians.add_densification_stats(viewspace_point_tensor, visibility_filter)
 
-                if self.iteration > self.opt.node_densify_from_iter and self.iteration % self.opt.node_densification_interval == 0 and self.iteration < self.opt.node_densify_until_iter and self.iteration > self.opt.warm_up or self.iteration == self.opt.node_force_densify_prune_step:
+                current_gaussian_count = self.gaussians.get_xyz.shape[0]
+                if current_gaussian_count <= self.opt.max_gaussians_threshold and self.iteration > self.opt.node_densify_from_iter and self.iteration % self.opt.node_densification_interval == 0 and self.iteration < self.opt.node_densify_until_iter and self.iteration > self.opt.warm_up or self.iteration == self.opt.node_force_densify_prune_step:
+                    
+                    if current_gaussian_count > 1_200_000:
+                        adaptive_threshold = self.opt.densify_grad_threshold * 5  # Much stricter
+                        print(f"[ITER {self.iteration}] Using adaptive threshold {adaptive_threshold:.6f} for {current_gaussian_count} Deform Gaussians")
+                    elif current_gaussian_count > 800_000:
+                        adaptive_threshold = self.opt.densify_grad_threshold * 3  # Stricter
+                    else:
+                        adaptive_threshold = self.opt.densify_grad_threshold  # Normal
+
                     # Nodes densify
-                    self.deform.densify(max_grad=self.opt.densify_grad_threshold, x=self.gaussians.get_xyz, x_grad=self.gaussians.xyz_gradient_accum / self.gaussians.denom, feature=self.gaussians.feature, force_dp=(self.iteration == self.opt.node_force_densify_prune_step))
+                    self.deform.densify(max_grad=adaptive_threshold, x=self.gaussians.get_xyz, x_grad=self.gaussians.xyz_gradient_accum / self.gaussians.denom, feature=self.gaussians.feature, force_dp=(self.iteration == self.opt.node_force_densify_prune_step))
+                elif current_gaussian_count > self.opt.max_gaussians_threshold and self.iteration > self.opt.node_densify_from_iter and self.iteration % self.opt.node_densification_interval == 0 and self.iteration < self.opt.node_densify_until_iter and self.iteration > self.opt.warm_up or self.iteration == self.opt.node_force_densify_prune_step:
+                    print(f"⚠️  [ITER {self.iteration}] STOPPING DEFORM DENSIFICATION: {current_gaussian_count} Deform Gaussians exceed threshold {self.opt.max_gaussians_threshold}")
 
                 current_gaussian_count = self.gaussians.get_xyz.shape[0]
                 if current_gaussian_count <= self.opt.max_gaussians_threshold and self.iteration > self.opt.densify_from_iter and self.iteration % self.opt.densification_interval == 0:
                     size_threshold = 20 if self.iteration > self.opt.opacity_reset_interval else None
 
                     # Adaptive densification threshold based on current Gaussian count
-                    current_gaussian_count = self.gaussians.get_xyz.shape[0]
                     if current_gaussian_count > 1_200_000:
                         adaptive_threshold = self.opt.densify_grad_threshold * 5  # Much stricter
                         print(f"[ITER {self.iteration}] Using adaptive threshold {adaptive_threshold:.6f} for {current_gaussian_count} Gaussians")
