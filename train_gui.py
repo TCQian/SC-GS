@@ -1191,10 +1191,10 @@ class GUI:
                 current_gaussian_count = self.gaussians.get_xyz.shape[0]
                 if current_gaussian_count <= self.opt.max_gaussians_threshold and self.iteration > self.opt.node_densify_from_iter and self.iteration % self.opt.node_densification_interval == 0 and self.iteration < self.opt.node_densify_until_iter and self.iteration > self.opt.warm_up or self.iteration == self.opt.node_force_densify_prune_step:
                     
-                    if current_gaussian_count > 1_200_000:
+                    if current_gaussian_count > 800_000:
                         adaptive_threshold = self.opt.densify_grad_threshold * 5  # Much stricter
                         print(f"[ITER {self.iteration}] Using adaptive threshold {adaptive_threshold:.6f} for {current_gaussian_count} Deform Gaussians")
-                    elif current_gaussian_count > 800_000:
+                    elif current_gaussian_count > 500_000:
                         adaptive_threshold = self.opt.densify_grad_threshold * 3  # Stricter
                     else:
                         adaptive_threshold = self.opt.densify_grad_threshold  # Normal
@@ -1209,10 +1209,10 @@ class GUI:
                     size_threshold = 20 if self.iteration > self.opt.opacity_reset_interval else None
 
                     # Adaptive densification threshold based on current Gaussian count
-                    if current_gaussian_count > 1_200_000:
+                    if current_gaussian_count > 800_000:
                         adaptive_threshold = self.opt.densify_grad_threshold * 5  # Much stricter
                         print(f"[ITER {self.iteration}] Using adaptive threshold {adaptive_threshold:.6f} for {current_gaussian_count} Gaussians")
-                    elif current_gaussian_count > 800_000:
+                    elif current_gaussian_count > 500_000:
                         adaptive_threshold = self.opt.densify_grad_threshold * 3  # Stricter
                     else:
                         adaptive_threshold = self.opt.densify_grad_threshold  # Normal
